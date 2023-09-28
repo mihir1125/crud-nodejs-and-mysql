@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Deleting from Database</title>
+        <link rel="stylesheet" href="/public/style.css" />
+    </head>
+    <body>
+        <a href="http://localhost:3000/">
+            <div id="backBtn"><<</div>
+        </a>
+        <h1>Deleting from Database</h1>
+        <table>
+            <tr>
+                <td><label for="rollno">Roll No.</label></td>
+                <td><input type="number" id="rollno" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <input
+                        type="button"
+                        onclick="deleteRollNo()"
+                        value="Delete Record"
+                    />
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div id="result"></div>
+        <script>
+            async function deleteCall(data) {
+                URL = "http://localhost:3000/api/deleteRecord";
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+                return response.json();
+            }
+            function deleteRollNo() {
+                const rollNo = document.getElementById("rollno").value;
+                console.log(rollNo);
+                const data = { rollNumber: rollNo };
+                deleteCall(data).then((res) => {
+                    if (res.status == "failed") {
+                        resultDiv = document.getElementById("result");
+                        resultDiv.innerHTML = "An error occured";
+                        console.log(res.error);
+                        return;
+                    }
+                    console.log(res);
+                    resultDiv = document.getElementById("result");
+                    resultDiv.innerHTML =
+                        "Successfully deleted roll no. " + res.deletedRollNo;
+                });
+            }
+        </script>
+    </body>
+</html>

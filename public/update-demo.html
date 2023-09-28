@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Update Data in Database</title>
+        <link rel="stylesheet" href="/public/style.css" />
+    </head>
+    <body>
+        <a href="http://localhost:3000/">
+            <div id="backBtn"><<</div>
+        </a>
+        <h1>Update Data in Database</h1>
+        <table>
+            <tr>
+                <td><label for="rollno">Roll No.</label></td>
+                <td><input type="number" id="rollno" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <input
+                        type="button"
+                        onclick="passRollNo()"
+                        value="Get Record"
+                    />
+                </td>
+            </tr>
+        </table>
+        <div id="result" style="display: none">
+            <table>
+                <tr>
+                    <td><label for="rollNo">Roll No:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="rollNo"
+                            name="rollNo"
+                            required
+                            readonly
+                            style="background-color: #dddddd"
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="firstName">First Name:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="lastName">Last Name:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="email" id="email" name="email" /></td>
+                </tr>
+                <tr>
+                    <td><label for="division">Division:</label></td>
+                    <td>
+                        <select name="division" id="division">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="department">Department:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="department"
+                            name="department"
+                            required
+                        />
+                    </td>
+                </tr>
+            </table>
+            <input type="button" value="Update" onclick="updateDetails()" />
+        </div>
+        <div id="status"></div>
+        <script>
+            async function getDetails(rollNo) {
+                const URL = "/api/getDetails?rollNo=" + rollNo;
+                const response = await fetch(URL);
+                return response.json();
+            }
+            function passRollNo() {
+                const rollNo = document.getElementById("rollno").value;
+                getDetails(rollNo)
+                    .then((res) => {
+                        displayDetails(res);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+            function getFields() {
+                field_rollNo = document.getElementById("rollNo");
+                field_fname = document.getElementById("firstName");
+                field_lname = document.getElementById("lastName");
+                field_email = document.getElementById("email");
+                field_division = document.getElementById("division");
+                field_department = document.getElementById("department");
+                return [
+                    field_rollNo,
+                    field_fname,
+                    field_lname,
+                    field_email,
+                    field_division,
+                    field_department,
+                ];
+            }
+            function displayDetails(res) {
+                const status = document.getElementById("status");
+                const resultDiv = document.getElementById("result");
+                if (res.status == "failed") {
+                    resultDiv.style.display = "none";
+                    status.innerHTML = "" + res.error;
+                    status.style.display = "block";
+                    return;
+                }
+                status.style.display = "none";
+                const {
+                    rollNo,
+                    firstName,
+                    lastName,
+                    email,
+                    division,
+                    department,
+                } = res.details;
+                receivedValues = [
+                    rollNo,
+                    firstName,
+                    lastName,
+                    email,
+                    division,
+                    department,
+                ];
+
+                inputFields = getFields();
+
+                console.log(inputFields);
+
+                inputFields.forEach((field, index) => {
+                    field.value = receivedValues[index];
+                });
+
+                document.getElementById("result").style.display = "block";
+            }
+            async function updateCall(data) {
+                URL = "http://localhost:3000/api/updateDetails";
+                const response = await fetch(URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
+                return response.json();
+            }
+            function updateDetails() {
+                inputFields = getFields();
+                keys = [
+                    "rollNo",
+                    "firstName",
+                    "lastName",
+                    "email",
+                    "division",
+                    "department",
+                ];
+                data = {};
+                inputFields.forEach((field, index) => {
+                    data[keys[index]] = field.value;
+                });
+                console.log(data);
+                updateCall(data).then((res) => {
+                    const status = document.getElementById("status");
+                    if (res.status == "failed") {
+                        status.innerHTML = "An error occured";
+                        return;
+                    }
+                    status.innerHTML = "Successfuly updated";
+                    status.style.display = "block";
+                });
+            }
+        </script>
+    </body>
+</html>

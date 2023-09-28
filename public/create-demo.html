@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Student Information</title>
+        <link rel="stylesheet" href="/public/style.css" />
+    </head>
+    <body>
+        <a href="http://localhost:3000/">
+            <div id="backBtn"><<</div>
+        </a>
+        <h1>Creating Data</h1>
+        <form action="http://localhost:3000/submit" method="POST" id="form">
+            <table>
+                <tr>
+                    <td><label for="rollNo">Roll No:</label></td>
+                    <td>
+                        <input
+                            type="number"
+                            id="rollNo"
+                            name="rollNo"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="firstName">First Name:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="lastName">Last Name:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="email">Email:</label></td>
+                    <td><input type="email" id="email" name="email" /></td>
+                </tr>
+                <tr>
+                    <td><label for="division">Division:</label></td>
+                    <td>
+                        <select name="division" id="division">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="department">Department:</label></td>
+                    <td>
+                        <input
+                            type="text"
+                            id="department"
+                            name="department"
+                            required
+                        />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center">
+                        <input type="submit" value="Submit" />
+                    </td>
+                </tr>
+            </table>
+            <br />
+        </form>
+        <script>
+            const form = document.getElementById("form");
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const details = new URLSearchParams(
+                    new FormData(form)
+                ).toString();
+                fetch("/api/submit", {
+                    method: "POST",
+                    body: details,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                })
+                    .then((res) => res.json())
+                    .then((result) => alert(result.msg));
+            };
+        </script>
+    </body>
+</html>

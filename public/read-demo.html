@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Reading from Database</title>
+        <link rel="stylesheet" href="/public/style.css" />
+    </head>
+    <body>
+        <a href="http://localhost:3000/">
+            <div id="backBtn"><<</div>
+        </a>
+        <h1>Reading from Database</h1>
+        <table>
+            <tr>
+                <td><label for="rollno">Roll No.</label></td>
+                <td><input type="number" id="rollno" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center">
+                    <input
+                        type="button"
+                        onclick="passRollNo()"
+                        value="Get Record"
+                    />
+                </td>
+            </tr>
+        </table>
+
+        <br /><br />
+
+        <br />
+        <div id="result"></div>
+        <script>
+            async function getDetails(rollNo) {
+                const URL = "/api/getDetails?rollNo=" + rollNo;
+                const response = await fetch(URL);
+                return response.json();
+            }
+            function passRollNo() {
+                const rollNo = document.getElementById("rollno").value;
+                getDetails(rollNo)
+                    .then((res) => {
+                        displayDetails(res);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+            function displayDetails(res) {
+                if (res.status == "failed") {
+                    document.getElementById("result").innerHTML =
+                        "<br>" + res.error;
+                    return;
+                }
+                const {
+                    firstName,
+                    lastName,
+                    email,
+                    division,
+                    department,
+                    rollNo,
+                } = res.details;
+                document.getElementById("result").innerHTML = `
+                    <h2>Result</h2>
+                    Roll No: ${rollNo}<br>
+                    Name: ${firstName} ${lastName}<br>
+                    Email: ${email}<br>
+                    Division: ${division}<br>
+                    Department: ${department}<br>
+                `;
+            }
+        </script>
+    </body>
+</html>

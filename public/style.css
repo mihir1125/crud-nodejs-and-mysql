@@ -1,0 +1,21 @@
+th,
+td {
+    padding: 10px;
+}
+#backBtn {
+    margin: 0;
+    padding: 10px;
+    border-radius: 100%;
+    border: 1px solid #333333;
+    font-size: 1.5em;
+    font-weight: bold;
+    font-family: monospace;
+    display: inline-flex;
+    background-color: beige;
+    text-align: center;
+    vertical-align: middle;
+}
+a {
+    text-decoration: none;
+    color: #333333;
+}
