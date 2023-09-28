@@ -4,24 +4,17 @@ const path = require("path");
 const app = express();
 const port = 3000;
 
-// Configure Express to use EJS as the view engine
-app.set("view engine", "ejs");
-
-// Middleware for parsing request body
 app.use(express.json());
-// app.use(bodyParser.text({ type: "application/x-www-form-urlencoded" }));
 app.use(express.urlencoded({ extended: false }));
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
-// Create a MySQL database connection
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "studentdb", // Create this database in MySQL
+    database: "studentdb",
 });
 
-// Connect to the MySQL database
 db.connect((err) => {
     if (err) {
         console.error("Error connecting to MySQL:", err);
@@ -34,7 +27,6 @@ const serve = (file) => {
     return path.join(__dirname, "public", file);
 };
 
-// Serve the HTML form
 app.get("/", (req, res) => {
     res.sendFile(serve("index.html"));
 });
@@ -51,12 +43,10 @@ app.get("/delete", (req, res) => {
     res.sendFile(serve("delete-demo.html"));
 });
 
-// Handle form submission
 app.post("/api/submit", (req, res) => {
     const { firstName, lastName, rollNo, department, division, email } =
         req.body;
     console.log(req.body);
-    // Insert data into the MySQL database
     const insertQuery =
         "INSERT INTO students (firstName, lastName, rollNo, department, division, email) VALUES (?, ?, ?, ?, ?, ?)";
     db.query(
@@ -64,7 +54,6 @@ app.post("/api/submit", (req, res) => {
         [firstName, lastName, rollNo, department, division, email],
         (err, result) => {
             if (err) {
-                // console.error("Error inserting data into MySQL:-\n", err);
                 res.send({
                     msg: "Roll no. already exists",
                 });
@@ -135,7 +124,6 @@ app.post("/api/deleteRecord", (req, res) => {
     });
 });
 
-// Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
